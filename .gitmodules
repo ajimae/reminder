@@ -1,0 +1,3 @@
+[submodule "service-x-proto-nodejs"]
+	path = service-x-proto-nodejs
+	url = https://github.com/ajimae/service-x-proto-nodejs.git
