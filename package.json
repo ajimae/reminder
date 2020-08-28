@@ -1,0 +1,26 @@
+{
+  "name": "reminder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajimae/reminder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajimae/reminder/issues"
+  },
+  "homepage": "https://github.com/ajimae/reminder#readme",
+  "dependencies": {
+    "google-protobuf": "^3.13.0",
+    "grpc": "^1.24.3",
+    "mali": "^0.21.0",
+    "mongoose": "^5.10.1"
+  }
+}
