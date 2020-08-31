@@ -2,13 +2,18 @@ var {
   Reminder,
   AddReminderResponse,
   GetUserRemindersResponse,
+  GetUserRemindersStreamResponse,
   UpdateReminderResponse,
   DeleteReminderResponse,
 } = require('../service-x-proto-nodejs/services/reminders/messages_pb');
 var services = require('../service-x-proto-nodejs/services/reminders/service_grpc_pb');
 
 const Mali = require('mali');
+const hl = require('highland')
+const intoStream = require('into-stream')
+const toJSON = require('mali-tojson')
 const connectDB = require('./database')
+const JSONStream = require('JSONStream')
 const ReminderDoc = require('./database/models');
 
 // make a connection to the database
@@ -25,8 +30,24 @@ function reminderToClass({ userId, noteId, datetime }) {
   return reminder;
 }
 
+// function reminderToClassStreams({ userId, noteId, datetime }) {
+//   var reminder = new GetUserRemindersStreamResponse();
+
+//   reminder.setUserId(userId)
+//   reminder.setNoteId(noteId)
+//   reminder.setDatetime(datetime)
+
+//   return reminder;
+// }
+
+function list(data) {
+  return hl(data)
+    .through(JSONStream.parse('*'))
+    .map(reminderToClass)
+}
+
 // middlewares
-async function logger (ctx, next) {
+async function logger(ctx, next) {
   const start = new Date()
   await next()
   const ms = new Date() - start
@@ -45,6 +66,27 @@ async function getUserReminders(ctx) {
   response.setReminderList(reminderDoc)
 
   ctx.res = response;
+}
+
+/**
+ * Implements the getReminder RPC stream method.
+ */
+async function getUserReminderStreams(ctx) {
+  var userId = ctx.req.getUserId()
+  var _reminder = await ReminderDoc.find({ userId })
+  
+  var reminderDoc = _reminder.map(reminderToClass)
+  
+  const reminders = []
+  for (var i = 0; i < reminderDoc.length; i++) {
+    var response = new GetUserRemindersStreamResponse();
+    response.setReminder(reminderDoc[i])
+    reminders.push(response)
+  }
+
+  // console.log(reminders, '{}}}-_-{{{}')
+  // reminders.map(o => console.log(o.toObject()))
+  ctx.res = intoStream.object(reminders)
 }
 
 /**
@@ -117,6 +159,7 @@ function main() {
   app.use({ updateReminder })
   app.use({ deleteReminder })
   app.use({ getUserReminders })
+  app.use({ getUserReminderStreams })
 
   app.start(HOSTPORT)
   console.log('server started on port ' + HOSTPORT.split(':')[0])

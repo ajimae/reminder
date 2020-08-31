@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node server/server"
   },
   "repository": {
     "type": "git",
@@ -18,9 +19,14 @@
   },
   "homepage": "https://github.com/ajimae/reminder#readme",
   "dependencies": {
+    "JSONStream": "^1.3.5",
     "google-protobuf": "^3.13.0",
     "grpc": "^1.24.3",
+    "highland": "^2.13.5",
+    "into-stream": "^6.0.0",
     "mali": "^0.21.0",
-    "mongoose": "^5.10.1"
+    "mali-tojson": "^0.2.0",
+    "mongoose": "^5.10.1",
+    "objects-to-csv": "^1.3.6"
   }
 }
