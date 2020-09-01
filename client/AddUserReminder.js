@@ -1,16 +1,7 @@
-var { Reminder, AddReminderRequest } = require('../service-x-proto-nodejs/services/reminders/messages_pb');
+var { AddReminderRequest } = require('../service-x-proto-nodejs/services/reminders/messages_pb');
 
 var client = require('.')
-
-function reminderToClass({ userId, noteId, dateTime }) {
-  var reminder = new Reminder();
-
-  reminder.setUserId(userId)
-  reminder.setNoteId(noteId)
-  reminder.setDatetime(dateTime)
-
-  return reminder;
-}
+var reminderToClass = require('./utils/reminderToClass')
 
 function addUserReminder(/** receive passed in reminder object */) {
 

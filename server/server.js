@@ -1,5 +1,4 @@
 var {
-  Reminder,
   AddReminderResponse,
   GetUserRemindersResponse,
   GetUserRemindersStreamResponse,
@@ -9,50 +8,15 @@ var {
 var services = require('../service-x-proto-nodejs/services/reminders/service_grpc_pb');
 
 const Mali = require('mali');
-const hl = require('highland')
 const intoStream = require('into-stream')
-const toJSON = require('mali-tojson')
+
 const connectDB = require('./database')
-const JSONStream = require('JSONStream')
 const ReminderDoc = require('./database/models');
+const reminderToClass = require('./utils/reminderToClass')
+const logger = require('./middlewares/logger')
 
 // make a connection to the database
 connectDB().then(function(data) { console.log('connected to database') }).catch(console.error)
-
-// utils
-function reminderToClass({ userId, noteId, datetime }) {
-  var reminder = new Reminder();
-
-  reminder.setUserId(userId)
-  reminder.setNoteId(noteId)
-  reminder.setDatetime(datetime)
-
-  return reminder;
-}
-
-// function reminderToClassStreams({ userId, noteId, datetime }) {
-//   var reminder = new GetUserRemindersStreamResponse();
-
-//   reminder.setUserId(userId)
-//   reminder.setNoteId(noteId)
-//   reminder.setDatetime(datetime)
-
-//   return reminder;
-// }
-
-function list(data) {
-  return hl(data)
-    .through(JSONStream.parse('*'))
-    .map(reminderToClass)
-}
-
-// middlewares
-async function logger(ctx, next) {
-  const start = new Date()
-  await next()
-  const ms = new Date() - start
-  console.log('%s [%s] - %s ms', ctx.name, ctx.type, ms);
-}
 
 /**
  * Implements the getReminder RPC method.
@@ -84,8 +48,6 @@ async function getUserReminderStreams(ctx) {
     reminders.push(response)
   }
 
-  // console.log(reminders, '{}}}-_-{{{}')
-  // reminders.map(o => console.log(o.toObject()))
   ctx.res = intoStream.object(reminders)
 }
 
@@ -93,7 +55,6 @@ async function getUserReminderStreams(ctx) {
  * Implements the addReminder RPC method.
  */
 async function addReminder(ctx) {
-  // reminders.push(ctx.req.getReminder())
 
   /** insert document into database */
   var reminderObj = await ReminderDoc.create({ ...ctx.req.getReminder().toObject() })
@@ -146,9 +107,8 @@ async function deleteReminder(ctx) {
  * Starts an RPC server that receives requests for the Greeter service at the
  * sample server port
  */
-function main() {
+(function() {
   const HOSTPORT = '0.0.0.0:50051'
-
   var app = new Mali(services, 'ReminderAPI')
 
   // middleware
@@ -162,7 +122,5 @@ function main() {
   app.use({ getUserReminderStreams })
 
   app.start(HOSTPORT)
-  console.log('server started on port ' + HOSTPORT.split(':')[0])
-}
-
-main();
+  console.log('server started on port ' + HOSTPORT.split(':')[1])
+})()
