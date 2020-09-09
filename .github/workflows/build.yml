@@ -1,0 +1,53 @@
+name: "build"
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        mongodb-version: [4.2]
+
+    steps:
+    - name: git checkout
+      uses: actions/checkout@v2
+
+    - name: use node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        DB_URL: ${{ secrets.DB_URL }}
+      # env:
+      #   DB_URL: ${{ secrets.DB_URL }}
+
+    - name: spin up mongodb
+      uses: supercharge/mongodb-github-action@1.3.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
+        # mongodb-replica-set: test-rs
+    
+    - name: include stub submodule to base repo
+      run: git submodule update --init
+      # run: git submodule add https://github.com/ajimae/service-x-proto-nodejs.git
+      # run: cd service-x-proto-nodejs && git pull origin master && ls -al && cd ..
+        
+    - name: install dependencies
+      run: npm install
+
+    - name: test and generate coverage report
+      run: npm test
+
+    - name: upload test coverage report
+      run: npm run coverage
+
+    - name: uplaod coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+      env:
+        CI: true
+        token: ${{ secrets.CODECOV_TOKEN }}

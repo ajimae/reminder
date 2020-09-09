@@ -1,7 +1,7 @@
 const connectDB = require('./server/database/index')
 
-const ReminderDoc = require('./server/database/models')
-connectDB().then(function() { }).catch(console.log)
+const ReminderDoc = require('./server/database/models');
+connectDB().then(function() { }).catch(console.log);
 
 (async function() {
   for (var i = 0; i < 10; i++) {

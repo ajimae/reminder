@@ -42,6 +42,7 @@ async function getUserReminderStreams(ctx) {
   var reminderDoc = _reminder.map(reminderToClass)
   
   const reminders = []
+  console.log(reminderDoc.length, '><><><')
   for (var i = 0; i < reminderDoc.length; i++) {
     var response = new GetUserRemindersStreamResponse();
     response.setReminder(reminderDoc[i])

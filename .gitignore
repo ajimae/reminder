@@ -1,3 +1,6 @@
 node_modules
 server.BAK.js
 test.csv
+.env
+.nyc_output
+coverage

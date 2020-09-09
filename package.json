@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests/*.test.js --exit",
-    "server": "node server/server"
+    "test": "cross-env NODE_ENV=test node_modules/.bin/nyc --reporter=lcov node_modules/.bin/mocha tests/**/*.spec.js --coverage --exit",
+    "server": "node server/server",
+    "coverage": "codecov --token='${token}'"
   },
   "repository": {
     "type": "git",
@@ -19,11 +20,15 @@
   },
   "homepage": "https://github.com/ajimae/reminder#readme",
   "dependencies": {
+    "codecov": "^3.7.2",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
     "google-protobuf": "^3.13.0",
     "grpc": "^1.24.3",
     "into-stream": "^6.0.0",
     "mali": "^0.21.0",
     "mongoose": "^5.10.1",
+    "nyc": "^15.1.0",
     "objects-to-csv": "^1.3.6"
   },
   "devDependencies": {
