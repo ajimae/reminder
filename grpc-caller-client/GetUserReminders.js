@@ -16,27 +16,16 @@ async function getUserReminders(/** we receive user id here */) {
     userId = 1;
   }
 
-  request.setUserId(userId)
-  client.getUserReminders(request, function(error, response) {
-    console.log(response.toObject())
-  })
+  request.setUserId(userId);
 
-  /**
-   * we can promisify the entire response object and then return a resolved promise */
-  // return new Promise(function(resolve, reject) {
-  //   client.getUserReminders(request, function(error, response) {
-  //     // console.log(response.toObject())
-  //     if(error) reject(error)
-  //     else resolve(response.toObject())
-  //   })
-  // })
+  const res = await client.getUserReminders(request, {}, { retry: 3 });
+  // const res = await client.getUserReminders(userId, {}, { retry: 3 });
+  console.log(res.toObject(), '>>>>');
 }
 
 /**
  * this function will be call at the
  * point where we can provide user id
  * to receive all his/her reminders
- * 
- * if getUserReminders() is a promise then we can await it.
  */
 getUserReminders(/** we pass user id here */)
