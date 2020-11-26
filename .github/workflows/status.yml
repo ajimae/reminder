@@ -22,8 +22,41 @@ jobs:
     - name: Install and build
       run: |
         npm install
-    - name: Run status checks
-      run: node ./status/index.js
+    - name:
+      run: | 
+        node ./status/index.js
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        RUN_ID: ${{ github.run_id }}
         GH_REPO: ${{ secrets.GH_REPO }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+    - name: wait for build
+      uses: fountainhead/action-wait-for-check@v1.0.0
+      id: wait-for-build
+      with:
+        # token: ${{ secrets.GH_TOKEN }}
+        token: 'b3b09e0bcf9e19d4240f1f34031993153b6ed005'
+        checkName: build
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+    - name: Passing build
+      if: steps.wait-for-build.outputs.conclusion == 'success'
+      run: |
+        echo "success"
+      env:
+        RUN_ID: ${{ github.run_id }}
+        GH_REPO: ${{ secrets.GH_REPO }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    - name: Failing build
+      if: steps.wait-for-build.outputs.conclusion == 'failure'
+      run: |
+        echo "failure"
+      env:
+        RUN_ID: ${{ github.run_id }}
+        GH_REPO: ${{ secrets.GH_REPO }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
