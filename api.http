@@ -1,0 +1,6 @@
+GET https://api.github.com/repos/ajimae/reminder/commits/3fb9efa662fc5aa354fdfe55e06b134a985b3172/status HTTP/1.1
+Content-Type: "application/json"
+
+###
+GET https://api.github.com/repos/ajimae/reminder/actions/runs/385263081
+Content-Type: "application/json"

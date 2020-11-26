@@ -32,7 +32,7 @@ describe('service test', function() {
     } else {
       return clearDB();
     }
-    done()
+    done();
   })
 
   it('should add a new reminder', function(done) {
